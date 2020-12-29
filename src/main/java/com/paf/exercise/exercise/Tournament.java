@@ -1,14 +1,5 @@
 package com.paf.exercise.exercise;
 
-import java.util.Random;
-
-/*
- CREATE TABLE tournament(
- id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
- tournament_id INT NOT NULL UNIQUE,
- reward_amount INT NOT NULL
- );
- */
 public class Tournament {
 
     private int tournament_id;

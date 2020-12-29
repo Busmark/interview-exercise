@@ -1,17 +1,5 @@
 package com.paf.exercise.exercise;
 
-
-import java.util.Random;
-
-/*
- CREATE TABLE player(
- pid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
- player_id INT NOT NULL UNIQUE,
- player_name VARCHAR NOT NULL,
- fk_id INT NOT NULL,
- foreign key (fk_id) references tournament(id)
- );
- */
 public class Player {
 
     private int player_id;
