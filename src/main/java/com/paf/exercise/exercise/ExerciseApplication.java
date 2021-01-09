@@ -21,6 +21,9 @@ public class ExerciseApplication {
 	@Autowired
 	public JdbcTemplate jdbcTemplate;
 
+    /**
+     * Equivalent to @PostMapping("/exercise/tournaments")
+     */
 	@GetMapping(value = "/exercise", params = {"operation=addTournament"})
 	public void addTournament(@RequestParam Map<String,String> allParams) {
 		String reward_amount = allParams.get("reward_amount");
@@ -30,7 +33,10 @@ public class ExerciseApplication {
 				"values(" + random.nextInt() + ", "  + reward_amount +  ")");
 	}
 
-	@GetMapping(value = "/exercise", params = {"operation=getTournaments"})
+    /**
+     * Equivalent to @GetMapping("/exercise/tournaments")
+     */
+    @GetMapping(value = "/exercise", params = {"operation=getTournaments"})
 	public List<Exercise> getTournaments(@RequestParam Map<String,String> allParams) {
 		//hämta alla Tournaments från databasen.
 		List<Tournament> tournamentList;
@@ -41,7 +47,6 @@ public class ExerciseApplication {
 						resultSet.getInt("tournament_id"),
 						resultSet.getInt("reward_amount"));
 			}});
-
 		//"Serialisera" från Tournament till Exercise för att inte exponera db-pojo.
 		final List<Exercise> exerciseList = new ArrayList<>();
 		tournamentList.forEach(tournament -> {
@@ -53,6 +58,9 @@ public class ExerciseApplication {
 		return exerciseList;
 	}
 
+    /**
+     * Equivalent to @GetMapping("/exercise/tournaments/{tournament_id}/players")
+     */
 	@GetMapping(value = "/exercise", params = {"operation=getPlayersInTournament"})
 	public List<Exercise> getPlayersInTournament(@RequestParam Map<String,String> allParams) {
 		String tournament_id = allParams.get("tournament_id");
@@ -67,7 +75,6 @@ public class ExerciseApplication {
 						resultSet.getString("player_name"),
 						resultSet.getInt("fk_id"));
 			}});
-
 		//"Serialisera" från Tournament till Exercise för att inte exponera db-pojo.
 		final List<Exercise> exerciseList = new ArrayList<>();
 		playerList.forEach(player -> {
@@ -80,7 +87,9 @@ public class ExerciseApplication {
 		return exerciseList;
 	}
 
-
+    /**
+     * Equivalent to @PutMapping("/exercise/tournaments/{tournament_id}")
+     */
 	@GetMapping(value = "/exercise", params = {"operation=updateTournament"})
 	public void updateTournament(@RequestParam Map<String,String> allParams) {
 		String reward_amount = allParams.get("reward_amount");
@@ -90,12 +99,18 @@ public class ExerciseApplication {
 				" where tournament_id=" + tournament_id);
 	}
 
+    /**
+     * Equivalent to @DeleteMapping("/exercise/tournaments/{tournament_id}")
+     */
 	@GetMapping(value = "/exercise", params = {"operation=removeTournament"})
 	public void removeTournament(@RequestParam Map<String,String> allParams) {
 		String tournament_id = allParams.get("tournament_id");
 		jdbcTemplate.execute("delete from tournament where tournament_id=" + tournament_id);
 	}
 
+    /**
+     * Equivalent to @PostMapping("/exercise/tournaments/{tournament_id}/players")
+     */
 	@GetMapping(value = "/exercise", params = {"operation=addPlayerIntoTournament"})
 	public void addPlayerIntoTournament(@RequestParam Map<String,String> allParams) {
 		Random random = new Random();
@@ -106,6 +121,9 @@ public class ExerciseApplication {
 				"values(" + random.nextInt() + ", '" + p_name + "', " + tournament_id +  ")");
 	}
 
+    /**
+     * Equivalent to @DeleteMapping("/exercise/tournaments/{tournament_id}/players/{player_id}")
+     */
 	@GetMapping(value = "/exercise", params = {"operation=removePlayerFromTournament"})
 	public void removePlayerFromTournament(@RequestParam Map<String,String> allParams) {
 		String tournament_id = allParams.get("tournament_id");
@@ -114,6 +132,8 @@ public class ExerciseApplication {
 		jdbcTemplate.execute("delete from player where fk_id=" + tournament_id
 				+ " and player_id=" + player_id);
 	}
+
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExerciseApplication.class, args);
