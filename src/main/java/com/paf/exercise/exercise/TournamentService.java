@@ -1,22 +1,36 @@
 package com.paf.exercise.exercise;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @Service
 public class TournamentService {
 
     @Autowired
-    public JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
+
+//    public TournamentService() {
+//    }
+
+    public List<Exercise> getTournaments() {
+        //hämta alla Tournaments från databasen.
+        List<Tournament> tournamentList;
+        tournamentList = jdbcTemplate.query("select * from tournament", (resultSet, i) -> new Tournament(
+                resultSet.getInt("tournament_id"),
+                resultSet.getInt("reward_amount")));
+        //"Serialisera" från Tournament till Exercise för att inte exponera db-pojo.
+        List<Exercise> exerciseList = new ArrayList<>();
+        tournamentList.forEach(tournament -> {
+            Exercise e = new Exercise();
+            e.tournament_id = tournament.getTournament_id();
+            e.reward_amount = tournament.getReward_amount();
+            exerciseList.add(e);
+        });
+        return exerciseList;
+    }
 
     public void addTournament(Map<String, String> allParams) {
         String reward_amount = allParams.get("reward_amount");
@@ -25,41 +39,16 @@ public class TournamentService {
                 "values(" + random.nextInt() + ", "  + reward_amount +  ")");
     }
 
-    public List<Object> getTournaments() {
-        //hämta alla Tournaments från databasen.
-        List<Tournament> tournamentList;
-        tournamentList = jdbcTemplate.query("select * from tournament", new RowMapper<Tournament>() {
-            @Override
-            public Tournament mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Tournament(
-                        resultSet.getInt("tournament_id"),
-                        resultSet.getInt("reward_amount"));
-            }});
-        //"Serialisera" från Tournament till Exercise för att inte exponera db-pojo.
-        final List<Exercise> exerciseList = new ArrayList<>();
-        tournamentList.forEach(tournament -> {
-            Exercise e = new Exercise();
-            e.tournament_id = tournament.getTournament_id();
-            e.reward_amount = tournament.getReward_amount();
-            exerciseList.add(e);
-        });
-        return Collections.singletonList(exerciseList);
-    }
-
-    public List<Object> getPlayersInTournament(Map<String, String> allParams) {
+    public List<Exercise> getPlayersInTournament(Map<String, String> allParams) {
         String tournament_id = allParams.get("tournament_id");
         //hämta alla Players från databasen.
         List<Player> playerList;
-        playerList = jdbcTemplate.query("select * from player where fk_id=" + tournament_id, new RowMapper<Player>() {
-            @Override
-            public Player mapRow(ResultSet resultSet, int i) throws SQLException {
-                return new Player(
-                        resultSet.getInt("player_id"),
-                        resultSet.getString("player_name"),
-                        resultSet.getInt("fk_id"));
-            }});
+        playerList = jdbcTemplate.query("select * from player where fk_id=" + tournament_id, (resultSet, i) -> new Player(
+                resultSet.getInt("player_id"),
+                resultSet.getString("player_name"),
+                resultSet.getInt("fk_id")));
         //"Serialisera" från Tournament till Exercise för att inte exponera db-pojo.
-        final List<Exercise> exerciseList = new ArrayList<>();
+        List<Exercise> exerciseList = new ArrayList<>();
         playerList.forEach(player -> {
             Exercise e = new Exercise();
             e.tournament_id = player.getFk_id();
@@ -67,7 +56,7 @@ public class TournamentService {
             e.player_name = player.getPlayer_name();
             exerciseList.add(e);
         });
-        return Collections.singletonList(exerciseList);
+        return exerciseList;
     }
 
     public void updateTournament(Map<String, String> allParams) {
@@ -100,7 +89,7 @@ public class TournamentService {
 
 
     // Objekt att exponera mot frontend.
-    private class Exercise {
+    static class Exercise {
         public int tournament_id;
         public int reward_amount;
         public int player_id;
