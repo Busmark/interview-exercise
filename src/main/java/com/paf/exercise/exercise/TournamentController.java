@@ -16,6 +16,7 @@ public class TournamentController {
 
     /**
      * Equivalent to @GetMapping("/exercise/tournaments")
+     * @return An unsorted List of Exercise.
      */
     @GetMapping(value = "/exercise", params = {"operation=getTournaments"})
     public List<TournamentService.Exercise> getTournaments(@RequestParam Map<String,String> allParams) {
@@ -25,6 +26,7 @@ public class TournamentController {
     /**
      * Equivalent to @PostMapping("/exercise/tournaments")
      */
+
     @GetMapping(value = "/exercise", params = {"operation=addTournament"})
     public void addTournament(@RequestParam Map<String,String> allParams) {
 		tournamentService.addTournament(allParams);
@@ -32,6 +34,7 @@ public class TournamentController {
 
     /**
      * Equivalent to @GetMapping("/exercise/tournaments/{tournament_id}/players")
+     * @return An unsorted List of Exercise.
      */
     @GetMapping(value = "/exercise", params = {"operation=getPlayersInTournament"})
     public List<TournamentService.Exercise> getPlayersInTournament(@RequestParam Map<String,String> allParams) {
